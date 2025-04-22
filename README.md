@@ -1,4 +1,4 @@
-# AXP2101 Rust
+# AW9523 Rust
 
 ![MSRV](https://img.shields.io/badge/MSRV-1.60-blue?style=flat-square)
 
