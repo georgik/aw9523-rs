@@ -33,12 +33,24 @@ where
 
     // Initialize AW9523
     pub fn init(&mut self) -> Result<(), Aw9523Error> {
-        let _ = self.interface.send_commands(DataFormat::U8(&[0x02, 0b00000101]));
-        let _ = self.interface.send_commands(DataFormat::U8(&[0x03, 0b00000011]));
-        let _ = self.interface.send_commands(DataFormat::U8(&[0x04, 0b00011000]));
-        let _ = self.interface.send_commands(DataFormat::U8(&[0x05, 0b00001100]));
-        let _ = self.interface.send_commands(DataFormat::U8(&[0x11, 0b00010000]));
-        let _ = self.interface.send_commands(DataFormat::U8(&[0x13, 0b11111111]));
+        let _ = self
+            .interface
+            .send_commands(DataFormat::U8(&[0x02, 0b00000101]));
+        let _ = self
+            .interface
+            .send_commands(DataFormat::U8(&[0x03, 0b00000011]));
+        let _ = self
+            .interface
+            .send_commands(DataFormat::U8(&[0x04, 0b00011000]));
+        let _ = self
+            .interface
+            .send_commands(DataFormat::U8(&[0x05, 0b00001100]));
+        let _ = self
+            .interface
+            .send_commands(DataFormat::U8(&[0x11, 0b00010000]));
+        let _ = self
+            .interface
+            .send_commands(DataFormat::U8(&[0x13, 0b11111111]));
 
         Ok(())
     }
@@ -51,27 +63,18 @@ pub struct I2CInterface<I2C> {
 
 impl<I2C> I2CInterface<I2C>
 where
-    I2C: embedded_hal::blocking::i2c::Write,
+    I2C: embedded_hal::i2c::I2c,
 {
     /// Create new I2C interface for communication with a display driver
     pub fn new(i2c: I2C, addr: u8) -> Self {
-        Self {
-            i2c,
-            addr,
-        }
-    }
-
-    /// Consume the display interface and return
-    /// the underlying peripherial driver
-    pub fn release(self) -> I2C {
-        self.i2c
+        Self { i2c, addr }
     }
 }
 
 // Implement Aw9523ReadWrite for I2CInterface
 impl<I> Aw9523ReadWrite for I2CInterface<I>
 where
-    I: embedded_hal::blocking::i2c::Write + embedded_hal::blocking::i2c::WriteRead,
+    I: embedded_hal::i2c::I2c,
 {
     // Send commands over I2C to Aw9523
     fn send_commands(&mut self, cmd: DataFormat<'_>) -> Result<(), Aw9523Error> {
@@ -88,9 +91,7 @@ where
             }
         }
     }
-
 }
-
 
 #[derive(Debug, Copy, Clone)]
 pub struct I2CGpioExpanderInterface(());
@@ -98,7 +99,7 @@ pub struct I2CGpioExpanderInterface(());
 impl I2CGpioExpanderInterface {
     pub fn new<I>(i2c: I) -> I2CInterface<I>
     where
-        I: embedded_hal::blocking::i2c::Write,
+        I: embedded_hal::i2c::I2c,
     {
         Self::new_custom_address(i2c, AW9523_ADDRESS)
     }
@@ -106,7 +107,7 @@ impl I2CGpioExpanderInterface {
     /// Create a new I2C interface with a custom address.
     pub fn new_custom_address<I>(i2c: I, address: u8) -> I2CInterface<I>
     where
-        I: embedded_hal::blocking::i2c::Write,
+        I: embedded_hal::i2c::I2c,
     {
         I2CInterface::new(i2c, address)
     }

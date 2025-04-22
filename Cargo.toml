@@ -7,5 +7,5 @@ license = "MIT"
 
 
 [dependencies]
-embedded-hal = "0.2"
+embedded-hal = "1.0.0"
 
